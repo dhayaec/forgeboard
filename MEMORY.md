@@ -133,6 +133,26 @@ All work committed to `main` branch per user instruction.
 - middleware.ts (extracts/generates x-request-id, records forgeMetrics.httpRequests/histogram, propagates header to response)
 - docs/observability/metrics-tracing.md
 
+### Phase 18: E2E Fixtures + Playwright Helpers — ✅ Complete
+- tests/e2e/{auth,features/projects,features/tasks,features/lib/test-utilities}.spec.ts
+- tests/e2e/helpers.ts (loginAsTestUser)
+- /api/_test/seed-* endpoint contracts for E2E fixture isolation
+
+### Phase 19: Docker — ✅ Complete
+- Dockerfile (multi-stage: deps → builder → runner, non-root, dumb-init, healthcheck)
+- docker-compose.yml (web, postgres, redis, otel-collector, prometheus, adminer)
+- .dockerignore
+- otel-collector-config.yaml (OTLP receivers → Prometheus + logging exporters)
+- prometheus.yml (scrape config for otel-collector + web /metrics)
+- docs/infrastructure/docker.md
+
+### Phase 20-29: Terraform AWS Infrastructure — ✅ Complete
+- infra/README.md (state layout, modules, secrets, cost notes)
+- infra/terraform.tf (root provider + version, no backend — moved to per-env)
+- modules: vpc, rds, elasticache, s3, iam, ecs, alb, ecr, secrets, cloudwatch, cdn, dns
+- environments: dev (single NAT, db.t4g.micro, 1-AZ), staging (multi-AZ-ish), prod (multi-AZ, deletion_protection, multi-node redis, full ALB+ECS+CDN+DNS+CloudWatch)
+- Per-environment backend s3 with dynamodb_table locking (separate state per env)
+
 ## Commits on main
 
 1. chore: initialize nextjs application with strict typescript and scaffold
@@ -150,6 +170,21 @@ All work committed to `main` branch per user instruction.
 13. Phase 13-14: Performance budgets + security checklist
 14. Phase 15-16: WCAG 2.2 AA checklist + Vitest/Playwright test suite
 15. Phase 17: OpenTelemetry + request-scoped context + pino structured logger + middleware
+16. Phase 16-17: Playwright E2E suite (auth, projects, tasks) + telemetry lib + middleware
+17. Phase 19: Multi-stage Dockerfile + docker-compose + OTel collector + prometheus scrape config
+18. Phase 20-29 (start): Terraform VPC + RDS + infra root backend
+19. Phase 20-29: Elasticache + S3 + IAM + ECS modules + infra README
+20. Phase 20-29: ALB + ECR modules + dev/staging/prod environment configs
+
+## Next steps (post-Phase 29)
+
+- Wire up `prisma migrate deploy` as a one-shot ECS task before service start
+- Create the S3 state buckets and DynamoDB lock tables (one-time, manual)
+- Add the `domains/dns` module and `cdn` module
+- Add CloudWatch alarms + dashboard module
+- CI: GitHub Actions workflow (typecheck → vitest → playwright → docker build → terraform plan)
+- Add MFA + OAuth providers to Auth.js
+- Add Lighthouse/Playwright a11y axe-core scans to CI
 
 ## Notes for Continuation
 
