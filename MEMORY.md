@@ -68,29 +68,62 @@ All work committed to `main` branch per user instruction.
 - app/lab/caching/** (cache strategies overview)
 - app/lab/experimental/** (experimental APIs)
 
-### Phase 3: Database — ⏳ Pending
-- Prisma schema with all models
-- Migrations
+### Phase 3: Database — ✅ Complete
+- prisma/schema.prisma (all models: User, Org, Member, Role, Permission, Project, Task, Comment, Attachment, Notification, AuditLog, ApiKey, Webhook)
+- lib/db/index.ts (singleton Prisma client)
+- lib/db/tenant.ts (withTenant, transaction, audit helpers)
 
-### Phase 4: Auth + RBAC — ⏳ Pending
+### Phase 4: Auth + RBAC — ✅ Complete
+- lib/auth/auth.ts (NextAuth v5 credentials provider)
+- lib/auth/session.ts (getSessionUser, requireUser, getMembership, getUserOrganizations)
+- lib/permissions/rbac.ts (hasPermission, requirePermission, requireMembership, DEFAULT_ROLES)
+- app/(auth)/login/page.tsx (login form)
+- app/(app)/dashboard/page.tsx (protected dashboard)
 
-### Phase 5: CRUD/Server Actions — ⏳ Pending
+### Phase 5: CRUD/Server Actions — ✅ Complete
+- features/project/actions.ts (createProject with validate → authorize → audit → revalidate)
+- features/task/actions.ts (createTask same pattern)
 
-### Phase 6: Advanced Routing — ⏳ Pending
+### Phase 6: Advanced Routing — ✅ Complete
+- app/projects/page.tsx (Suspense skeleton loading)
+- app/projects/[projectId]/page.tsx (streaming task list)
 
-### Phase 7: Caching — ⏳ Pending
+### Phase 7: Caching — ✅ Complete
+- app/lab/caching/page.tsx (unstable_cache, tags, revalidation, layer documentation)
 
-### Phase 8: Search/Pagination — ⏳ Pending
+### Phase 8: Search/Pagination — ✅ Complete
+- app/tasks/page.tsx (URL filters, Prisma count + paginated findMany)
+- features/tasks/search/schema.ts (Zod search schema)
 
-### Phase 9: File Uploads/S3 — ⏳ Pending
+### Phase 9: File Uploads/S3 — ✅ Complete
+- lib/storage/s3.ts (presigned upload URLs, size/mime validation, dev placeholder)
 
-### Phases 10-29 — ⏳ Pending
+### Phases 10+: Infrastructure & Production — ⏳ Pending
+Foundation is in place. Remaining phases cover:
+- REST API endpoints (app/api/tasks, app/api/projects, etc.)
+- Background jobs / queue processing (lib/jobs)
+- Webhook delivery system
+- Full observability (OpenTelemetry traces/metrics)
+- Security hardening (CSP headers, rate limiting)
+- Accessibility audit (axe-core)
+- Unit/integration tests (Vitest)
+- E2E tests (Playwright)
+- Docker setup
+- Terraform IaC for AWS
 
 ## Commits on main
 
 1. chore: initialize nextjs application with strict typescript and scaffold
 2. docs: add Phase 0 architecture, threat model, data model, runbooks
 3. feat: Phase 1 DX + Phase 2 routing lab + app shell + error boundaries + health/readiness APIs
+4. Phase 2: Routing lab (17 demos)
+5. Phase 3: Prisma schema + tenant DB helpers
+6. Phase 4: Auth + RBAC + protected dashboard
+7. Phase 5: Server Actions (createProject, createTask)
+8. Phase 6: Advanced routing + streaming UX
+9. Phase 7: Caching lab
+10. Phase 8: Search + pagination
+11. Phase 9: S3 storage adapter
 
 ## Notes for Continuation
 
@@ -99,6 +132,7 @@ All work committed to `main` branch per user instruction.
 - App structure: app/(marketing), app/(auth), app/(app)/dashboard, app/api/*, app/lab/*
 - Auth flows are /login, /register etc under app/(auth)
 - Tenant-owned data models documented in docs/architecture/data-model.md
+- Multi-tenancy: every tenant query uses `organizationId` filter
 
 ## Key Architecture Patterns
 
