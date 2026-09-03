@@ -23,7 +23,7 @@ import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentation
 import { Resource } from '@opentelemetry/resources';
 import { SEMRESATTRS_SERVICE_NAME, SEMRESATTRS_SERVICE_VERSION } from '@opentelemetry/semantic-conventions';
 import { PeriodicExportingMetricReader } from '@opentelemetry/sdk-metrics';
-import { trace, metrics, context, Span, SpanStatusCode, Metrics } from '@opentelemetry/api';
+import { trace, metrics, context, Span, SpanStatusCode } from '@opentelemetry/api';
 import { withRequestId, getRequestId } from '@/lib/telemetry/request-context';
 
 const serviceName = process.env.OTEL_SERVICE_NAME ?? 'forgeboard';
@@ -122,7 +122,7 @@ export async function withSpan<T>(
 
 // ─── Metrics ──────────────────────────────────────────────────────────────────
 
-export { metrics, Metrics };
+export { metrics };
 
 /** Get a named counter metric. */
 export function getCounter(name: string, opts?: { description?: string; unit?: string }) {

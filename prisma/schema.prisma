@@ -31,12 +31,13 @@ model User {
   members      OrganizationMember[]
   createdProjects   Project[]       @relation("ProjectCreator")
   createdTasks      Task[]          @relation("TaskCreator")
-  assignedTasks     Task[]          @relation("TaskAssignee")
+  assigneeTasks     Task[]          @relation("TaskAssignees")
   comments         Comment[]
   uploadedAttachments Attachment[]   @relation("AttachmentUploader")
   notifications    Notification[]
   auditLogs        AuditLog[]
   apiKeys          ApiKey[]
+  taskAssigneeJoins TaskAssignee[]  @relation("TaskAssigneeJoin")
 
   @@map("users")
 }
@@ -96,6 +97,7 @@ model Organization {
   members       OrganizationMember[]
   roles         Role[]
   projects      Project[]
+  attachments   Attachment[]
   labels        Label[]
   apiKeys       ApiKey[]
   webhooks      Webhook[]
@@ -210,7 +212,7 @@ model Task {
 
   project    Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
   createdBy  User          @relation("TaskCreator", fields: [createdById], references: [id])
-  assignee   User?         @relation("TaskAssignee", fields: [assigneeId], references: [id])
+  assignee   User?         @relation("TaskAssignees", fields: [assigneeId], references: [id])
   labels     TaskLabel[]
   assignees  TaskAssignee[]
   comments   Comment[]
@@ -243,7 +245,7 @@ model TaskAssignee {
   createdAt DateTime @default(now())
 
   task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation("TaskAssigneeJoin", fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([taskId, userId])
   @@index([userId])

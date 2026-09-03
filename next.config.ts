@@ -4,10 +4,7 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   compress: true,
-  experimental: {
-    typedRoutes: true,
-    instrumentationHook: true,
-  },
+  typedRoutes: true,
   images: {
     remotePatterns: [
       {
