@@ -41,18 +41,7 @@ export const logger = pino({
     ],
     censor: '[REDACTED]',
   },
-  ...(isProduction
-    ? {}
-    : {
-        transport: {
-          target: 'pino-pretty',
-          options: {
-            colorize: true,
-            translateTime: 'HH:MM:ss.l',
-            ignore: 'pid,hostname',
-          },
-        },
-      }),
+  ...(isProduction ? {} : { transport: { target: 'pino-pretty', options: { colorize: true, translateTime: 'HH:MM:ss.l', ignore: 'pid,hostname', singleLine: true } } }),
 });
 
 /** Generate a request ID (correlates logs across a single request). */

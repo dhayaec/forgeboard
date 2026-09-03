@@ -6,7 +6,7 @@
  */
 
 import { auth } from './auth';
-import { UnauthorizedError } from '@/lib/errors';
+import { AuthenticationError } from '@/lib/errors';
 import { db } from '@/lib/db';
 
 export type SessionUser = {
@@ -28,7 +28,7 @@ export async function getSessionUser(): Promise<SessionUser | null> {
 export async function requireUser(): Promise<SessionUser> {
   const user = await getSessionUser();
   if (!user) {
-    throw new UnauthorizedError('You must be signed in');
+    throw new AuthenticationError('auth.required', 'You must be signed in', 401);
   }
   return user;
 }

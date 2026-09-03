@@ -83,8 +83,8 @@ export const config = {
     },
   },
   pages: {
-    signIn: '/(auth)/login',
-    error: '/(auth)/login',
+    signIn: '/auth/login',
+    error: '/auth/login',
   },
 };
 

@@ -17,7 +17,7 @@ export default function HomePage() {
 
       <div className="grid max-w-2xl grid-cols-1 gap-4 sm:grid-cols-2">
         <FeatureCard
-          href="/app/dashboard"
+          href="/dashboard"
           title="App Dashboard"
           description="Authenticated application shell"
         />
@@ -27,7 +27,7 @@ export default function HomePage() {
           description="Next.js routing patterns demo"
         />
         <FeatureCard
-          href="/app/projects/new"
+          href="/projects/new"
           title="Create Project"
           description="Server Actions demo"
         />
@@ -40,13 +40,13 @@ export default function HomePage() {
 
       <div className="mt-4 flex gap-4">
         <Link
-          href="/login"
+          href="/auth/login"
           className="rounded-lg bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90"
         >
           Sign In
         </Link>
         <Link
-          href="/register"
+          href="/auth/register"
           className="rounded-lg border border-border bg-background px-6 py-3 text-sm font-semibold text-foreground shadow-sm transition-colors hover:bg-muted"
         >
           Get Started
