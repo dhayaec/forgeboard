@@ -1,0 +1,100 @@
+# =============================================================================
+# ForgeBoard .gitignore
+# Production-grade ignore patterns for a Next.js + TypeScript + Terraform project
+# =============================================================================
+
+# Node / pnpm
+node_modules/
+.pnpm-store/
+*.log
+*.tsbuildinfo
+.npm/
+.pnpm-debug.log*
+.yarn-integrity
+
+# Next.js
+.next/
+out/
+build/
+dist/
+.turbo/
+next-env.d.ts.bak
+
+# Production
+*.tgz
+*.tar.gz
+*.zip
+
+# Testing
+coverage/
+.nyc_output/
+test-results/
+playwright-report/
+playwright/.cache/
+
+# IDE
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# OS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+ehthumbs.db
+Desktop.ini
+
+# Local environment files
+.env
+.env.local
+.env.*.local
+.env.development
+.env.production
+.env.test
+
+# Secrets (NEVER commit)
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+secrets/
+.secrets/
+
+# Prisma
+prisma/.env
+
+# Terraform
+.terraform/
+.terraform.lock.hcl
+*.tfstate
+*.tfstate.*
+*.tfstate.backup
+*.tfvars
+!*.tfvars.example
+crash.log
+crash.*.log
+*.tfplan
+tfplan
+*.tfplan.json
+
+# Docker
+Dockerfile.bak
+
+# Misc
+.eslintcache
+.stylelintcache
+.cache/
+.parcel-cache/
+.history/
+
+# Local development
+.pg_data/
+.redis_data/
+.qdrant_data/
