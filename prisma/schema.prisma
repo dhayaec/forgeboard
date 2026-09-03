@@ -1,0 +1,439 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================
+// Auth.js / NextAuth v5 Compatible Models
+// ============================================================
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  emailVerified DateTime?
+  image         String?
+  passwordHash  String?
+  mfaSecret     String?   // encrypted TOTP secret
+  mfaEnabled   Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts     Account[]
+  sessions     Session[]
+  members      OrganizationMember[]
+  createdProjects   Project[]       @relation("ProjectCreator")
+  createdTasks      Task[]          @relation("TaskCreator")
+  assignedTasks     Task[]          @relation("TaskAssignee")
+  comments         Comment[]
+  uploadedAttachments Attachment[]   @relation("AttachmentUploader")
+  notifications    Notification[]
+  auditLogs        AuditLog[]
+  apiKeys          ApiKey[]
+
+  @@map("users")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+// ============================================================
+// Organization & RBAC
+// ============================================================
+
+model Organization {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  logoUrl   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  members       OrganizationMember[]
+  roles         Role[]
+  projects      Project[]
+  labels        Label[]
+  apiKeys       ApiKey[]
+  webhooks      Webhook[]
+  auditLogs     AuditLog[]
+  notifications Notification[]
+
+  @@map("organizations")
+}
+
+model OrganizationMember {
+  id             String       @id @default(cuid())
+  organizationId String
+  userId         String
+  roleId         String
+  createdAt      DateTime     @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role        Role         @relation(fields: [roleId], references: [id])
+
+  @@unique([organizationId, userId])
+  @@index([userId])
+  @@map("organization_members")
+}
+
+model Role {
+  id             String   @id @default(cuid())
+  organizationId String
+  name           String   // Owner | Admin | Manager | Member | Viewer
+  description    String?
+  isSystem       Boolean  @default(false) // true for built-in roles
+  createdAt     DateTime @default(now())
+
+  organization Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  permissions  RolePermission[]
+  members      OrganizationMember[]
+
+  @@unique([organizationId, name])
+  @@index([organizationId])
+  @@map("roles")
+}
+
+model Permission {
+  id        String   @id @default(cuid())
+  resource  String   // projects | tasks | members | comments | etc.
+  action    String   // create | read | update | delete | manage
+  createdAt DateTime @default(now())
+
+  roles RolePermission[]
+
+  @@unique([resource, action])
+  @@map("permissions")
+}
+
+model RolePermission {
+  id         String @id @default(cuid())
+  roleId     String
+  permissionId String
+
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@unique([roleId, permissionId])
+  @@map("role_permissions")
+}
+
+// ============================================================
+// Projects & Tasks
+// ============================================================
+
+model Project {
+  id          String            @id @default(cuid())
+  organizationId String
+  name        String
+  description String?           @db.Text
+  status      ProjectStatus     @default(ACTIVE)
+  icon        String?
+  color       String?
+  createdById String
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  createdBy    User         @relation("ProjectCreator", fields: [createdById], references: [id])
+  tasks       Task[]
+
+  @@index([organizationId])
+  @@index([createdById])
+  @@map("projects")
+}
+
+enum ProjectStatus {
+  ACTIVE
+  ARCHIVED
+}
+
+model Task {
+  id          String       @id @default(cuid())
+  projectId   String
+  title       String
+  description String?      @db.Text
+  status      TaskStatus   @default(TODO)
+  priority    TaskPriority @default(MEDIUM)
+  dueDate     DateTime?
+  position    Float        @default(0) // for ordering within a column
+  createdById String
+  assigneeId  String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  deletedAt   DateTime?    // soft delete
+  version     Int          @default(1) // optimistic concurrency
+
+  project    Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdBy  User          @relation("TaskCreator", fields: [createdById], references: [id])
+  assignee   User?         @relation("TaskAssignee", fields: [assigneeId], references: [id])
+  labels     TaskLabel[]
+  assignees  TaskAssignee[]
+  comments   Comment[]
+  attachments Attachment[]
+
+  @@index([projectId, status])
+  @@index([assigneeId, status])
+  @@index([projectId, deletedAt])
+  @@map("tasks")
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  REVIEW
+  DONE
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+model TaskAssignee {
+  id        String   @id @default(cuid())
+  taskId    String
+  userId    String
+  createdAt DateTime @default(now())
+
+  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([taskId, userId])
+  @@index([userId])
+  @@map("task_assignees")
+}
+
+model Label {
+  id             String   @id @default(cuid())
+  organizationId String
+  name           String
+  color          String   @default("#6366f1")
+  createdAt      DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  tasks       TaskLabel[]
+
+  @@unique([organizationId, name])
+  @@index([organizationId])
+  @@map("labels")
+}
+
+model TaskLabel {
+  id      String @id @default(cuid())
+  taskId  String
+  labelId String
+
+  task  Task  @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  label Label @relation(fields: [labelId], references: [id], onDelete: Cascade)
+
+  @@unique([taskId, labelId])
+  @@map("task_labels")
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  taskId    String
+  userId    String
+  content   String   @db.Text
+  editedAt  DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([taskId])
+  @@index([userId])
+  @@map("comments")
+}
+
+model Attachment {
+  id             String   @id @default(cuid())
+  taskId         String
+  organizationId String
+  uploadedById   String
+  filename       String
+  mimeType       String
+  sizeBytes      Int
+  s3Key          String
+  thumbnailKey   String?
+  createdAt      DateTime @default(now())
+
+  task       Task       @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organizationId], references: [id])
+  uploadedBy User        @relation("AttachmentUploader", fields: [uploadedById], references: [id])
+
+  @@index([taskId])
+  @@index([organizationId])
+  @@map("attachments")
+}
+
+// ============================================================
+// Notifications
+// ============================================================
+
+model Notification {
+  id        String                @id @default(cuid())
+  userId    String
+  type      NotificationType
+  title     String
+  body      String?
+  data      Json?                // { taskId, projectId, ... }
+  read      Boolean               @default(false)
+  organizationId String?
+  createdAt DateTime              @default(now())
+
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization Organization? @relation(fields: [organizationId], references: [id], onDelete: SetNull)
+
+  @@index([userId, read, createdAt(sort: Desc)])
+  @@index([organizationId])
+  @@map("notifications")
+}
+
+enum NotificationType {
+  TASK_ASSIGNED
+  COMMENT_ADDED
+  MENTIONED
+  STATUS_CHANGED
+  TASK_DUE_SOON
+  PROJECT_UPDATED
+}
+
+// ============================================================
+// Audit Log
+// ============================================================
+
+model AuditLog {
+  id           String   @id @default(cuid())
+  organizationId String
+  actorId      String?
+  action       String   // e.g. "task.created"
+  entityType   String   // e.g. "Task"
+  entityId     String
+  metadata     Json?    // { diff, before, after }
+  ipAddress    String?
+  userAgent    String?
+  requestId    String?
+  createdAt    DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  actor        User?         @relation(fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId, createdAt(sort: Desc)])
+  @@index([entityType, entityId])
+  @@map("audit_logs")
+}
+
+// ============================================================
+// API Keys & Webhooks
+// ============================================================
+
+model ApiKey {
+  id           String    @id @default(cuid())
+  organizationId String
+  name         String
+  keyPrefix    String    // first 8 chars for display
+  keyHash      String    // SHA-256 of full key
+  lastUsedAt   DateTime?
+  expiresAt    DateTime?
+  createdById  String
+  createdAt    DateTime  @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  createdBy    User         @relation(fields: [createdById], references: [id])
+
+  @@index([organizationId])
+  @@index([keyHash])
+  @@map("api_keys")
+}
+
+model Webhook {
+  id             String   @id @default(cuid())
+  organizationId String
+  name           String
+  url            String
+  events         String[] // ["task.created", "task.updated"]
+  secret         String   // encrypted HMAC signing secret
+  active         Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@map("webhooks")
+}
+
+// ============================================================
+// Password Reset / Recovery
+// ============================================================
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  email     String
+  token     String   @unique
+  expires   DateTime
+
+  @@unique([email, token])
+  @@map("password_reset_tokens")
+}
+
+model RecoveryCode {
+  id        String   @id @default(cuid())
+  userId    String
+  code      String   @unique // hashed
+  used      Boolean  @default(false)
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@map("recovery_codes")
+}

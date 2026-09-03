@@ -50,11 +50,41 @@ All work committed to `main` branch per user instruction.
 ### Phase 2: Routing Lab — ✅ Complete
 - app/ (root layout, error, global-error, not-found, robots, sitemap, page)
 - app/api/health, app/api/ready (Route Handlers)
-- app/lab (and partial examples for nested-layout, route-groups, dynamic-routes, parallel-routes, catch-all-routes)
+- app/lab/page.tsx (comprehensive index with 17 demos)
+- app/lab/nested-layout/** (nested layout composition)
+- app/lab/route-groups/** ((marketing) and (auth) route groups)
+- app/lab/dynamic-routes/[projectId]/** (dynamic segments + generateStaticParams)
+- app/lab/catch-all-routes/optional/[[...slug]]/** (optional catch-all)
+- app/lab/parallel-routes/** (@header, @sidebar slots with layout)
+- app/lab/search-params/** (URL-driven filters with form actions + loading.tsx)
+- app/lab/cookies/** (server-side cookie reads)
+- app/lab/headers/** (incoming request headers)
+- app/lab/static-rendering/** (force-static, CDN-cached)
+- app/lab/dynamic-rendering/** (force-dynamic, per-request)
+- app/lab/suspense/** (streaming with Suspense + skeleton fallback)
+- app/lab/error-handling/** (error.tsx boundaries)
+- app/lab/not-found-behavior/** (notFound() + segment-level not-found.tsx)
+- app/lab/redirects/** (server-side redirect())
+- app/lab/caching/** (cache strategies overview)
+- app/lab/experimental/** (experimental APIs)
 
 ### Phase 3: Database — ⏳ Pending
+- Prisma schema with all models
+- Migrations
 
 ### Phase 4: Auth + RBAC — ⏳ Pending
+
+### Phase 5: CRUD/Server Actions — ⏳ Pending
+
+### Phase 6: Advanced Routing — ⏳ Pending
+
+### Phase 7: Caching — ⏳ Pending
+
+### Phase 8: Search/Pagination — ⏳ Pending
+
+### Phase 9: File Uploads/S3 — ⏳ Pending
+
+### Phases 10-29 — ⏳ Pending
 
 ## Commits on main
 
