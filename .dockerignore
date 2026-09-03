@@ -1,0 +1,26 @@
+# ignore everything
+*
+
+# allow these
+!package.json
+!pnpm-lock.yaml
+!pnpm-workspace.yaml
+!.npmrc
+!tsconfig.json
+!next.config.ts
+!postcss.config.js
+!tailwind.config.ts
+
+# source
+!app/
+!lib/
+!features/
+!prisma/
+!public/
+!packages/
+!docs/
+
+# env example (no secrets)
+!.env.example
+!otel-collector-config.yaml
+!prometheus.yml

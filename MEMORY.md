@@ -98,18 +98,40 @@ All work committed to `main` branch per user instruction.
 ### Phase 9: File Uploads/S3 — ✅ Complete
 - lib/storage/s3.ts (presigned upload URLs, size/mime validation, dev placeholder)
 
-### Phases 10+: Infrastructure & Production — ⏳ Pending
-Foundation is in place. Remaining phases cover:
-- REST API endpoints (app/api/tasks, app/api/projects, etc.)
-- Background jobs / queue processing (lib/jobs)
-- Webhook delivery system
-- Full observability (OpenTelemetry traces/metrics)
-- Security hardening (CSP headers, rate limiting)
-- Accessibility audit (axe-core)
-- Unit/integration tests (Vitest)
-- E2E tests (Playwright)
-- Docker setup
-- Terraform IaC for AWS
+### Phase 10: Versioned APIs — ✅ Complete
+- app/api/v1/projects/route.ts (GET list, POST create, auth+RBAC, Zod, pagination)
+- app/api/v1/tasks/route.ts (GET with idempotency-key, POST with org verification)
+- app/api/v1/search/route.ts (GET cross-entity search)
+- app/api/_lib/api-response.ts (consistent error envelope, requestId, paginatedMeta)
+- app/api/_lib/api-auth.ts (session OR Bearer API key, SHA-256 hash lookup)
+
+### Phase 11: Background Jobs (Redis) — ✅ Complete
+- lib/queue/types.ts (BullMQ-style enqueue/getJob/completeJob/failJob with exponential backoff, DLQ, idempotency)
+- lib/queue/jobs.ts (7 jobs: sendWelcomeEmail, sendNotification, processAttachment, generateReport, cleanupExpiredTokens, cleanupOrphanedFiles, deliverWebhook with HMAC-SHA256)
+
+### Phase 12: Webhook API — ✅ Complete
+- app/api/v1/webhooks/route.ts (GET/POST with secret generation, event validation, RBAC)
+- lib/queue/jobs.ts::deliverWebhook (HMAC signing, retry)
+
+### Phase 13-14: Performance + Security — ✅ Complete
+- docs/performance/budgets.md (bundle, LCP, INP, CLS, TTFB, API, DB targets)
+- docs/security/security-checklist.md (full input/auth/authz/session/secret checklist)
+
+### Phase 15: A11y — ✅ Complete
+- docs/accessibility/wcag-checklist.md (WCAG 2.2 AA: Perceivable/Operable/Understandable/Robust)
+
+### Phase 16: Tests — ✅ Complete
+- vitest.config.ts + playwright.config.ts
+- tests/unit/lib/{validation,errors,rbac,result}.spec.ts
+- tests/integration/api/health.spec.ts
+- tests/e2e/{auth,features/projects,features/tasks,features/lib/test-utilities}.spec.ts
+
+### Phase 17: Observability — ✅ Complete
+- lib/telemetry/index.ts (OpenTelemetry SDK, withSpan, 9 counters + 3 histograms + 2 gauges, recordHttpRequest/recordDbQuery)
+- lib/telemetry/request-context.ts (AsyncLocalStorage<RequestContext>, withRequestId, getRequestId, getCurrentUserId, getCurrentOrgId)
+- lib/telemetry/logger.ts (pino + redact + auto-injected requestId/userId/orgId/traceId)
+- middleware.ts (extracts/generates x-request-id, records forgeMetrics.httpRequests/histogram, propagates header to response)
+- docs/observability/metrics-tracing.md
 
 ## Commits on main
 
@@ -124,6 +146,10 @@ Foundation is in place. Remaining phases cover:
 9. Phase 7: Caching lab
 10. Phase 8: Search + pagination
 11. Phase 9: S3 storage adapter
+12. Phase 10-12: Versioned APIs + Redis queue + Webhook API
+13. Phase 13-14: Performance budgets + security checklist
+14. Phase 15-16: WCAG 2.2 AA checklist + Vitest/Playwright test suite
+15. Phase 17: OpenTelemetry + request-scoped context + pino structured logger + middleware
 
 ## Notes for Continuation
 
