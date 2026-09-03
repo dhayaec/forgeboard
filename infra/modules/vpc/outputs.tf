@@ -1,0 +1,9 @@
+output "vpc_id" { value = aws_vpc.main.id }
+output "public_subnet_ids" { value = aws_subnet.public[*].id }
+output "private_subnet_ids" { value = aws_subnet.private[*].id }
+output "ecs_tasks_security_group_id" { value = aws_security_group.ecs_tasks.id }
+output "alb_security_group_id" { value = aws_security_group.alb.id }
+output "rds_security_group_id" { value = aws_security_group.rds.id }
+output "elasticache_security_group_id" { value = aws_security_group.elasticache.id }
+output "nat_gateway_ids" { value = aws_nat_gateway.this[*].id }
+output "igw_id" { value = aws_internet_gateway.main.id }
