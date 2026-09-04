@@ -22,6 +22,12 @@ const envSchema = z.object({
   SESSION_MAX_AGE_SECONDS: z.coerce.number().int().default(2592000),
   SESSION_UPDATE_AGE_SECONDS: z.coerce.number().int().default(86400),
 
+  // OAuth providers
+  GOOGLE_CLIENT_ID: z.string().optional(),
+  GOOGLE_CLIENT_SECRET: z.string().optional(),
+  GITHUB_CLIENT_ID: z.string().optional(),
+  GITHUB_CLIENT_SECRET: z.string().optional(),
+
   // MFA
   MFA_ISSUER: z.string().default('ForgeBoard'),
 
@@ -78,6 +84,10 @@ export const envServer = {
   SESSION_MAX_AGE_SECONDS: env.SESSION_MAX_AGE_SECONDS,
   SESSION_UPDATE_AGE_SECONDS: env.SESSION_UPDATE_AGE_SECONDS,
   MFA_ISSUER: env.MFA_ISSUER,
+  GOOGLE_CLIENT_ID: env.GOOGLE_CLIENT_ID,
+  GOOGLE_CLIENT_SECRET: env.GOOGLE_CLIENT_SECRET,
+  GITHUB_CLIENT_ID: env.GITHUB_CLIENT_ID,
+  GITHUB_CLIENT_SECRET: env.GITHUB_CLIENT_SECRET,
   AWS_REGION: env.AWS_REGION,
   AWS_ACCESS_KEY_ID: env.AWS_ACCESS_KEY_ID,
   AWS_SECRET_ACCESS_KEY: env.AWS_SECRET_ACCESS_KEY,

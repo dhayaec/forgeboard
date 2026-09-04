@@ -3,16 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "description": "Production-grade multi-tenant project/work-management SaaS built with Next.js, TypeScript, and Terraform",
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "protobufjs",
-      "@prisma/client",
-      "@prisma/engines",
-      "esbuild",
-      "prisma",
-      "unrs-resolver"
-    ]
-  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -26,13 +16,16 @@
     "format:check": "prettier --check ."
   },
   "dependencies": {
+    "@otplib/core": "^13.5.0",
     "@prisma/client": "^6.2.1",
     "bcryptjs": "^2.4.3",
     "clsx": "^2.1.1",
     "cookie": "^1.0.2",
     "jsonwebtoken": "^9.0.2",
     "next": "16.3.0",
+    "otplib": "^13.5.0",
     "pino": "^10.3.1",
+    "qrcode": "^1.5.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "server-only": "^0.0.1",
