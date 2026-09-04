@@ -18,7 +18,7 @@ import Credentials from 'next-auth/providers/credentials';
 import { z } from 'zod';
 import { db } from '@/lib/db';
 import { logger } from '@/lib/logging/logger';
-import { authenticator } from 'otplib';
+import { totp } from './totp';
 import QRCode from 'qrcode';
 import { envServer } from '@/lib/env';
 
@@ -118,19 +118,13 @@ export const { auth, handlers, signIn, signOut } = NextAuth(config);
 // MFA helpers
 // ---------------------------------------------------------------------------
 
-/** Configure TOTP authenticator defaults. */
-authenticator.options = {
-  window: 1,
-  step: 30,
-};
-
 /**
  * Generate a new TOTP secret for a user and return the otpauth:// URI + QR code data URL.
  * Call this once when enabling MFA — store mfaSecret on the user.
  */
-export async function generateMfaSetup(userId: string, email: string) {
-  const secret = authenticator.generateSecret();
-  const otpauth = authenticator.keyuri(email, envServer.MFA_ISSUER, secret);
+export async function generateMfaSetup(_userId: string, email: string) {
+  const secret = totp.generateSecret();
+  const otpauth = totp.keyuri(envServer.MFA_ISSUER, email, secret);
   const qrDataUrl = await QRCode.toDataURL(otpauth, {
     errorCorrectionLevel: 'M',
     margin: 2,
@@ -143,5 +137,5 @@ export async function generateMfaSetup(userId: string, email: string) {
  * Verify a TOTP token against a stored mfaSecret.
  */
 export function verifyMfaToken(token: string, mfaSecret: string): boolean {
-  return authenticator.verify({ token, secret: mfaSecret });
+  return totp.verify(token, mfaSecret);
 }

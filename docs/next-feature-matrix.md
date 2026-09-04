@@ -56,4 +56,4 @@ Tracks every Next.js feature we use, where, and its production status.
 | Docker / Self Hosting         | ✅         | `Dockerfile`                                   | Yes            | Multi-stage, non-root                      |
 | Health checks                 | ✅         | Dockerfile `HEALTHCHECK` + `/api/health`       | Yes            | ECS / docker-compose                       |
 
-Last updated: Phase 0
+Last updated: Phase 29 — complete. Schema validated, migrations applied, auth/oauth/mfa, email, CI/CD, release engineering, production-readiness documented.

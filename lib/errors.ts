@@ -15,6 +15,16 @@ export class AppError extends Error {
   readonly safe: boolean;
   readonly metadata?: Record<string, unknown>;
 
+  toJSON() {
+    return {
+      code: this.code,
+      statusCode: this.statusCode,
+      safe: this.safe,
+      message: this.message,
+      ...(this.metadata ? { details: this.metadata } : {}),
+    };
+  }
+
   constructor(
     code: string,
     message: string,

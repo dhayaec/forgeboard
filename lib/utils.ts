@@ -97,6 +97,8 @@ export const isBrowser = typeof window !== 'undefined';
 export const isServer = !isBrowser;
 
 /**
- * Re-export commonly used utilities.
+ * Convenience re-export of `setTimeout`-based delay without importing `node:util`.
+ * Local `sleep()` is identical in behavior — kept here to avoid the build error
+ * caused by colliding with the named export above.
  */
-export { sleep as delay } from 'node:util';
+export { sleep as delay };

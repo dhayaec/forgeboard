@@ -8,8 +8,8 @@
  */
 
 import { db } from '@/lib/db';
-import { ForbiddenError, UnauthorizedError } from '@/lib/errors';
-import { getMembership, requireUser } from './session';
+import { AuthorizationError } from '@/lib/errors';
+import { getMembership, requireUser } from '@/lib/auth/session';
 import type { OrganizationMember } from '@prisma/client';
 
 export type Permission = `${string}:${string}`;
@@ -100,14 +100,14 @@ export async function requirePermission(
   const user = await requireUser();
   const membership = await getMembership(user.id, organizationId);
   if (!membership) {
-    throw new ForbiddenError('You are not a member of this organization');
+    throw new AuthorizationError('You are not a member of this organization');
   }
   const has = membership.role.permissions.some(
     (rp) =>
       `${rp.permission.resource}:${rp.permission.action}` === permission
   );
   if (!has) {
-    throw new ForbiddenError(`Missing permission: ${permission}`);
+    throw new AuthorizationError(`Missing permission: ${permission}`);
   }
   return { userId: user.id, membership };
 }
@@ -129,6 +129,6 @@ export async function isMember(userId: string, organizationId: string): Promise<
 export async function requireMembership(organizationId: string) {
   const user = await requireUser();
   const m = await isMember(user.id, organizationId);
-  if (!m) throw new ForbiddenError('You are not a member of this organization');
+  if (!m) throw new AuthorizationError('You are not a member of this organization');
   return user;
 }

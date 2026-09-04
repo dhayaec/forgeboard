@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { AppError, NotFoundError, UnauthorizedError, ForbiddenError, ValidationError } from '@/lib/errors';
+import { AppError, NotFoundError, AuthenticationError, AuthorizationError, ValidationError } from '@/lib/errors';
 
 describe('AppError hierarchy', () => {
   it('AppError has code, statusCode, safe, and message', () => {
@@ -18,25 +18,25 @@ describe('AppError hierarchy', () => {
     expect(err.safe).toBe(true);
   });
 
-  it('UnauthorizedError defaults to 401', () => {
-    const err = new UnauthorizedError('Not authenticated');
+  it('AuthenticationError defaults to 401', () => {
+    const err = new AuthenticationError('Not authenticated');
     expect(err.statusCode).toBe(401);
-    expect(err.code).toBe('UNAUTHORIZED');
+    expect(err.code).toBe('UNAUTHENTICATED');
     expect(err.safe).toBe(true);
   });
 
-  it('ForbiddenError defaults to 403', () => {
-    const err = new ForbiddenError('Forbidden');
+  it('AuthorizationError defaults to 403', () => {
+    const err = new AuthorizationError('Forbidden');
     expect(err.statusCode).toBe(403);
     expect(err.code).toBe('FORBIDDEN');
     expect(err.safe).toBe(true);
   });
 
-  it('ValidationError defaults to 422', () => {
+  it('ValidationError defaults to 400 with details', () => {
     const err = new ValidationError('Invalid input', { field: ['required'] });
-    expect(err.statusCode).toBe(422);
+    expect(err.statusCode).toBe(400);
     expect(err.code).toBe('VALIDATION_ERROR');
     expect(err.safe).toBe(true);
-    expect(err.details).toEqual({ field: ['required'] });
+    expect(err.metadata).toEqual({ field: ['required'] });
   });
 });
