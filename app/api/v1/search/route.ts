@@ -51,12 +51,12 @@ export const GET = async (req: NextRequest) => {
   }
 
   if (type === 'all' || type === 'tasks') {
-    const taskWhere: Parameters<typeof db.task.findMany>[0]['where'] = {
-      deletedAt: null,
+    type TaskStatus = 'TODO' | 'IN_PROGRESS' | 'REVIEW' | 'DONE';
+    const taskWhere: { project: { organizationId: string }; title?: { contains: string; mode: 'insensitive' }; status?: TaskStatus } = {
       project: { organizationId: org.id },
-      title: { contains: q, mode: 'insensitive' },
     };
-    if (status) taskWhere.status = status as 'TODO' | 'IN_PROGRESS' | 'REVIEW' | 'DONE';
+    if (q) taskWhere.title = { contains: q, mode: 'insensitive' as const };
+    if (status) taskWhere.status = status;
 
     const tasks = await db.task.findMany({
       where: taskWhere,

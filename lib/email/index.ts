@@ -5,13 +5,14 @@
  */
 import 'server-only';
 import nodemailer from 'nodemailer';
+import type { Transporter } from 'nodemailer';
 import { envServer } from '@/lib/env';
 import { logger } from '@/lib/logging/logger';
 
 /** Singleton transporter, created on first send. */
-let _transporter: nodemailer.Transporter | null = null;
+let _transporter: Transporter | null = null;
 
-function getTransporter(): nodemailer.Transporter {
+function getTransporter(): Transporter {
   if (_transporter) return _transporter;
 
   if (envServer.SMTP_HOST && envServer.SMTP_PORT) {
@@ -34,7 +35,7 @@ function getTransporter(): nodemailer.Transporter {
 }
 
 /** In-memory transport that logs emails instead of sending them (dev/preview). */
-function createLogOnlyTransport(): nodemailer.Transporter {
+function createLogOnlyTransport(): Transporter {
   return nodemailer.createTransport({
     jsonTransport: true,
   });

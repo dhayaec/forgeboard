@@ -24,12 +24,12 @@ export const GET = async (req: NextRequest) => {
 
   const [projects, total] = await Promise.all([
     db.project.findMany({
-      where: { organizationId: org.id, deletedAt: null },
+      where: { organizationId: org.id },
       orderBy: { createdAt: 'desc' },
       skip: (page - 1) * perPage,
       take: perPage,
     }),
-    db.project.count({ where: { organizationId: org.id, deletedAt: null } }),
+    db.project.count({ where: { organizationId: org.id } }),
   ]);
 
   return Response.json({

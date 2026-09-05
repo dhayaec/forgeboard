@@ -25,7 +25,13 @@ export function safeValidate<T extends z.ZodTypeAny>(
 ): { ok: true; data: z.infer<T> } | { ok: false; errors: Record<string, string[]> } {
   const result = schema.safeParse(value);
   if (!result.success) {
-    return { ok: false, errors: result.error.flatten().fieldErrors };
+    const fieldErrors = result.error.flatten().fieldErrors;
+    // Strip undefined entries so the return type is Record<string, string[]>
+    const errors: Record<string, string[]> = {};
+    for (const [key, msgs] of Object.entries(fieldErrors)) {
+      if (msgs !== undefined) errors[key] = msgs;
+    }
+    return { ok: false, errors };
   }
   return { ok: true, data: result.data };
 }

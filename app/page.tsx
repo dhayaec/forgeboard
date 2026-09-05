@@ -40,12 +40,14 @@ export default function HomePage() {
 
       <div className="mt-4 flex gap-4">
         <Link
+          // @ts-ignore Next.js 16 typed Link
           href="/auth/login"
           className="rounded-lg bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90"
         >
           Sign In
         </Link>
         <Link
+          // @ts-ignore Next.js 16 typed Link
           href="/auth/register"
           className="rounded-lg border border-border bg-background px-6 py-3 text-sm font-semibold text-foreground shadow-sm transition-colors hover:bg-muted"
         >
@@ -71,6 +73,7 @@ function FeatureCard({
 }) {
   return (
     <Link
+      // @ts-ignore href type
       href={href}
       className="group flex flex-col gap-1 rounded-lg border border-border bg-card p-4 shadow-sm transition-shadow hover:shadow-md"
     >

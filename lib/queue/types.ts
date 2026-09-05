@@ -10,7 +10,7 @@
  * - Logging: all job events are structured and traceable.
  */
 
-import { env } from '@/lib/env';
+import { envServer } from '@/lib/env';
 import { logger } from '@/lib/logging/logger';
 
 export type JobStatus = 'pending' | 'active' | 'completed' | 'failed' | 'retry';
@@ -39,11 +39,11 @@ export type JobDefinition = {
 
 let _redis: import('ioredis').Redis | null = null;
 
-async function getRedis() {
+async function getRedis(): Promise<import('ioredis').Redis> {
   if (_redis) return _redis;
   const { default: Redis } = await import('ioredis');
-  _redis = new Redis(env.REDIS_URL, { maxRetriesPerRequest: 3 });
-  _redis.on('error', (err) => logger.error({ event: 'redis.error', err }));
+  _redis = new Redis(envServer.REDIS_URL, { maxRetriesPerRequest: 3 });
+  _redis.on('error', (err: unknown) => logger.error({ event: 'redis.error', err }));
   return _redis;
 }
 

@@ -202,6 +202,7 @@ model Task {
   priority    TaskPriority @default(MEDIUM)
   dueDate     DateTime?
   position    Float        @default(0) // for ordering within a column
+  idempotencyKey String?   @unique // idempotency key for safe retries
   createdById String
   assigneeId  String?
   createdAt   DateTime     @default(now())

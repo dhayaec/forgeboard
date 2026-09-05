@@ -2,7 +2,7 @@
  * E2E tests for the task workflow.
  */
 import { test, expect } from '@playwright/test';
-import { loginAsTestUser } from '../helpers';
+import { loginAsTestUser } from './helpers';
 
 test.describe('Tasks', () => {
   let orgId: string;

@@ -30,7 +30,7 @@ export async function authenticateRequest(): Promise<ApiAuth | null> {
   if (!match) return null;
 
   const keyHash = createHash('sha256').update(match[1]).digest('hex');
-  const apiKey = await db.apiKey.findUnique({ where: { keyHash } });
+  const apiKey = await db.apiKey.findFirst({ where: { keyHash } });
   if (!apiKey) return null;
 
   // Update last-used

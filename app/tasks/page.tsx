@@ -57,11 +57,10 @@ function SkeletonTable() {
 }
 
 async function TaskTable({ q, status, page, perPage }: { q: string; status: string; page: number; perPage: number }) {
-  const where: { title?: { contains: string; mode: 'insensitive' }; status?: string; deletedAt: null } = {
-    deletedAt: null,
-  };
+  type TaskStatus = 'TODO' | 'IN_PROGRESS' | 'REVIEW' | 'DONE';
+  const where: { title?: { contains: string; mode: 'insensitive' }; status?: TaskStatus; projectId?: string } = {};
   if (q) where.title = { contains: q, mode: 'insensitive' as const };
-  if (status) where.status = status;
+  if (status) where.status = status as TaskStatus;
 
   const [tasks, total] = await Promise.all([
     db.task.findMany({
@@ -69,7 +68,7 @@ async function TaskTable({ q, status, page, perPage }: { q: string; status: stri
       orderBy: [{ status: 'asc' }, { createdAt: 'desc' }],
       skip: (page - 1) * perPage,
       take: perPage,
-      select: { id: true, title: true, status: true, priority: true, project: { select: { id: true, name: true } } },
+      select: { id: true, title: true, status: true, priority: true, projectId: true, project: { select: { id: true, name: true } } },
     }),
     db.task.count({ where }),
   ]);

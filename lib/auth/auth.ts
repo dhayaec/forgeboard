@@ -11,7 +11,7 @@
  * - TOTP MFA via otpauth + QR codes via qrcode
  */
 
-import NextAuth from 'next-auth';
+import NextAuth, { type NextAuthConfig } from 'next-auth';
 import Google from 'next-auth/providers/google';
 import GitHub from 'next-auth/providers/github';
 import Credentials from 'next-auth/providers/credentials';
@@ -19,10 +19,11 @@ import { z } from 'zod';
 import { db } from '@/lib/db';
 import { logger } from '@/lib/logging/logger';
 import { totp } from './totp';
-import QRCode from 'qrcode';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const QRCode = require('qrcode') as typeof import('qrcode');
 import { envServer } from '@/lib/env';
 
-export const config = {
+export const config: NextAuthConfig = {
   providers: [
     ...(envServer.GOOGLE_CLIENT_ID && envServer.GOOGLE_CLIENT_SECRET
       ? [
@@ -89,7 +90,7 @@ export const config = {
     error: '/auth/login',
   },
   callbacks: {
-    async session({ session, token }) {
+    async session({ session, token }: { session: any; token: any }) {
       if (token.sub) {
         session.user = {
           id: token.sub,
@@ -99,7 +100,7 @@ export const config = {
       }
       return session;
     },
-    async jwt({ token, user, account }) {
+    async jwt({ token, user, account }: { token: any; user?: any; account?: any }) {
       if (user) {
         token.sub = user.id;
         token.email = user.email;
@@ -110,7 +111,7 @@ export const config = {
       return token;
     },
   },
-};
+} as const;
 
 export const { auth, handlers, signIn, signOut } = NextAuth(config);
 

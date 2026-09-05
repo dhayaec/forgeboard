@@ -5,6 +5,7 @@
  */
 
 import { PrismaClient } from '@prisma/client';
+import { PrismaPg } from '@prisma/adapter-pg';
 import { envServer } from '@/lib/env';
 import { logger } from '@/lib/logging/logger';
 
@@ -15,11 +16,11 @@ const globalForPrisma = globalThis as unknown as {
 export const db =
   globalForPrisma.prisma ??
   new PrismaClient({
+    adapter: new PrismaPg({ connectionString: envServer.DATABASE_URL }),
     log:
       envServer.NODE_ENV === 'development'
         ? ['query', 'error', 'warn']
         : ['error'],
-    datasourceUrl: envServer.DATABASE_URL,
   });
 
 if (envServer.NODE_ENV !== 'production') {

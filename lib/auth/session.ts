@@ -28,7 +28,7 @@ export async function getSessionUser(): Promise<SessionUser | null> {
 export async function requireUser(): Promise<SessionUser> {
   const user = await getSessionUser();
   if (!user) {
-    throw new AuthenticationError('auth.required', 'You must be signed in', 401);
+    throw new AuthenticationError('You must be signed in');
   }
   return user;
 }

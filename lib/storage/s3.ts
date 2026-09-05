@@ -4,7 +4,8 @@
  * In development, returns a placeholder URL.
  */
 
-import { env } from '@/lib/env';
+import { envServer } from '@/lib/env';
+import { logger } from '@/lib/logging/logger';
 
 export type UploadRequest = {
   filename: string;
@@ -22,10 +23,10 @@ export type UploadResult = {
 
 export async function createPresignedUpload(req: UploadRequest): Promise<UploadResult> {
   // Validate size and mime type
-  if (req.sizeBytes > env.MAX_UPLOAD_SIZE) {
-    throw new Error(`File exceeds maximum size of ${env.MAX_UPLOAD_SIZE} bytes`);
+  if (req.sizeBytes > envServer.MAX_UPLOAD_SIZE) {
+    throw new Error(`File exceeds maximum size of ${envServer.MAX_UPLOAD_SIZE} bytes`);
   }
-  const allowed = (env.ALLOWED_UPLOAD_TYPES || '').split(',').map((t) => t.trim());
+  const allowed = (envServer.ALLOWED_UPLOAD_TYPES || '').split(',').map((t) => t.trim());
   if (allowed.length > 0 && !allowed.includes(req.mimeType)) {
     throw new Error(`File type ${req.mimeType} not allowed`);
   }
@@ -35,11 +36,11 @@ export async function createPresignedUpload(req: UploadRequest): Promise<UploadR
   const key = `org/${req.organizationId}/${crypto.randomUUID()}.${ext}`;
 
   // In dev, return a fake presigned URL.
-  if (env.NODE_ENV === 'development') {
+  if (envServer.NODE_ENV === 'development') {
     return {
       uploadUrl: `https://localhost/fake-presigned?key=${key}`,
       s3Key: key,
-      publicUrl: `https://${env.S3_BUCKET}.s3.amazonaws.com/${key}`,
+      publicUrl: `https://${envServer.S3_BUCKET_ATTACHMENTS}.s3.amazonaws.com/${key}`,
       expiresIn: 600,
     };
   }

@@ -42,12 +42,12 @@ export function appError(
 }
 
 /** Type guard: check if a result is ok */
-export function isOk<T, E>(result: Result<T, E>): result is { ok: true; data: T } {
+export function isOk<T, E extends AppError>(result: Result<T, E>): result is { ok: true; data: T } {
   return result.ok === true;
 }
 
 /** Type guard: check if a result is an error */
-export function isErr<T, E>(result: Result<T, E>): result is { ok: false; error: E } {
+export function isErr<T, E extends AppError>(result: Result<T, E>): result is { ok: false; error: E } {
   return result.ok === false;
 }
 
@@ -55,7 +55,7 @@ export function isErr<T, E>(result: Result<T, E>): result is { ok: false; error:
  * Map the success value of a Result.
  * Pass-through errors unchanged.
  */
-export function mapResult<T, U, E>(
+export function mapResult<T, U, E extends AppError>(
   result: Result<T, E>,
   fn: (data: T) => U
 ): Result<U, E> {
@@ -67,7 +67,7 @@ export function mapResult<T, U, E>(
  * Chain Result operations — call fn only on success.
  * Useful for sequential operations that might fail.
  */
-export function andThen<T, U, E>(
+export function andThen<T, U, E extends AppError>(
   result: Result<T, E>,
   fn: (data: T) => Result<U, E>
 ): Result<U, E> {

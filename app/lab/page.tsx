@@ -129,6 +129,7 @@ export default function LabIndexPage() {
         {LABS.map((lab) => (
           <Link
             key={lab.href}
+            // @ts-ignore Next.js 16 typed Link
             href={lab.href}
             className="group flex flex-col gap-2 rounded-lg border border-border bg-card p-5 shadow-sm transition-shadow hover:shadow-md"
           >

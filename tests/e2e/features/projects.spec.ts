@@ -2,7 +2,7 @@
  * E2E tests for project CRUD flows.
  */
 import { test, expect } from '@playwright/test';
-import { loginAsTestUser } from '../helpers';
+import { loginAsTestUser } from './helpers';
 
 test.describe('Projects', () => {
   let orgId: string;

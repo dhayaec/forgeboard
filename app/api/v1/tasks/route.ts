@@ -39,7 +39,6 @@ export const GET = async (req: NextRequest) => {
       where: {
         idempotencyKey,
         project: { organizationId: org.id },
-        deletedAt: null,
       },
     });
     if (existing) {

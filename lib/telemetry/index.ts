@@ -20,7 +20,7 @@ import { NodeSDK } from '@opentelemetry/sdk-node';
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http';
 import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-http';
 import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node';
-import { Resource } from '@opentelemetry/resources';
+import { resourceFromAttributes } from '@opentelemetry/resources';
 import { SEMRESATTRS_SERVICE_NAME, SEMRESATTRS_SERVICE_VERSION } from '@opentelemetry/semantic-conventions';
 import { PeriodicExportingMetricReader } from '@opentelemetry/sdk-metrics';
 import { trace, metrics, context, Span, SpanStatusCode } from '@opentelemetry/api';
@@ -48,7 +48,7 @@ export function initTelemetry(): void {
   });
 
   sdk = new NodeSDK({
-    resource: new Resource({
+    resource: resourceFromAttributes({
       [SEMRESATTRS_SERVICE_NAME]: serviceName,
       [SEMRESATTRS_SERVICE_VERSION]: serviceVersion,
       'deployment.environment': process.env.NODE_ENV ?? 'development',
@@ -60,8 +60,6 @@ export function initTelemetry(): void {
         '@opentelemetry/instrumentation-http': { enabled: true },
         '@opentelemetry/instrumentation-express': { enabled: true },
         '@opentelemetry/instrumentation-pg': { enabled: true },
-        '@opentelemetry/instrumentation-redis-4': { enabled: true },
-        '@opentelemetry/instrumentation-next': { enabled: true },
       }),
     ],
   });
@@ -79,7 +77,11 @@ export function initTelemetry(): void {
 
 // ─── Tracing ──────────────────────────────────────────────────────────────────
 
-export { trace, Span, SpanStatusCode };
+export { trace };
+export type { Span } from '@opentelemetry/api';
+export { SpanStatusCode } from '@opentelemetry/api';
+export type { Resource } from '@opentelemetry/resources';
+
 
 /** Get the current active span, or undefined. */
 export function getCurrentSpan(): Span | undefined {

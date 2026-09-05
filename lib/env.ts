@@ -56,6 +56,10 @@ const envSchema = z.object({
 
   // Feature flags
   FEATURE_FLAGS_API_ENABLED: z.enum(['true', 'false']).default('false'),
+
+  // Uploads
+  MAX_UPLOAD_SIZE: z.coerce.number().int().default(25 * 1024 * 1024),
+  ALLOWED_UPLOAD_TYPES: z.string().default('image/png,image/jpeg,image/gif,image/webp,application/pdf'),
 });
 
 const parsed = envSchema.safeParse(process.env);
@@ -104,6 +108,8 @@ export const envServer = {
   RATE_LIMIT_WINDOW_MS: env.RATE_LIMIT_WINDOW_MS,
   RATE_LIMIT_MAX: env.RATE_LIMIT_MAX,
   FEATURE_FLAGS_API_ENABLED: env.FEATURE_FLAGS_API_ENABLED === 'true',
+  MAX_UPLOAD_SIZE: env.MAX_UPLOAD_SIZE,
+  ALLOWED_UPLOAD_TYPES: env.ALLOWED_UPLOAD_TYPES,
 } as const;
 
 // Client-safe env (public vars only)

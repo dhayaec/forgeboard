@@ -136,7 +136,7 @@ registerJob(
     const body = JSON.stringify({ event, data, sentAt: new Date().toISOString() });
     const signature = createHmac('sha256', webhook.secret).update(body).digest('hex');
     // Real implementation: use fetch with timeout + retry semantics
-    logger.info({ event: 'webhook.delivered', webhookId, event, signature: signature.slice(0, 8) }, 'Webhook delivered (dry-run)');
+    logger.info({ event: 'webhook.delivered', webhookId, eventName: event, signature: signature.slice(0, 8) }, 'Webhook delivered (dry-run)');
   }
 );
 
