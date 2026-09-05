@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { requireMembership } from '@/lib/permissions/rbac';
+import { redirect } from 'next/navigation';
+import { getSessionUser } from '@/lib/auth/session';
 import { db } from '@/lib/db';
 import { updateProject, archiveProject } from '@/app/actions/projects';
 import { createTask } from '@/app/actions/tasks';
@@ -85,15 +86,17 @@ function EditProjectForm({ projectId, name, description }: { projectId: string; 
 }
 
 export default async function ProjectDetailPage({ params }: Props) {
+  const user = await getSessionUser();
+  if (!user) redirect('/auth/login');
   const { projectId } = await params;
-  await requireMembership(projectId);
-
   const project = await db.project.findUnique({
     where: { id: projectId },
     include: { _count: { select: { tasks: true } } },
   });
 
   if (!project) notFound();
+  const membership = await db.organizationMember.findFirst({ where: { userId: user.id, organizationId: project.organizationId } });
+  if (!membership) redirect('/projects');
 
   return (
     <div className="mx-auto max-w-4xl p-8">

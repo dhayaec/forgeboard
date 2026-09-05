@@ -1,6 +1,7 @@
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import { Suspense } from 'react';
-import { requireUser } from '@/lib/auth/session';
+import { getSessionUser } from '@/lib/auth/session';
 import { db } from '@/lib/db';
 
 export const metadata = { title: 'Projects — ForgeBoard' };
@@ -56,7 +57,8 @@ async function ProjectsList() {
 }
 
 export default async function ProjectsPage() {
-  await requireUser();
+  const user = await getSessionUser();
+  if (!user) redirect('/auth/login');
   return (
     <div className="mx-auto max-w-6xl p-8">
       <header className="mb-6 flex items-center justify-between">
