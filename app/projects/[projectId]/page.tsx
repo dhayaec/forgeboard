@@ -50,7 +50,7 @@ async function TaskList({ projectId }: { projectId: string }) {
 
 function CreateTaskForm({ projectId }: { projectId: string }) {
   return (
-    <form action={(createTask as unknown) as (formData: FormData) => Promise<void>} className="flex gap-2">
+    <form action={createTask} className="flex gap-2">
       <input type="hidden" name="projectId" value={projectId} />
       <input name="title" type="text" required placeholder="New task title…" maxLength={200} className="flex-1 rounded-lg border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
       <select name="status" className="rounded-lg border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring">
@@ -68,7 +68,7 @@ function EditProjectForm({ projectId, name, description }: { projectId: string; 
   return (
     <details className="group mt-4 rounded-lg border border-border">
       <summary className="cursor-pointer px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground">Edit Project</summary>
-      <form action={(updateProject as unknown) as (formData: FormData) => Promise<void>} method="post" className="border-t border-border p-4 space-y-3">
+      <form action={updateProject} method="post" className="border-t border-border p-4 space-y-3">
         <input type="hidden" name="projectId" value={projectId} />
         <div>
           <label htmlFor="edit-name" className="block text-xs font-medium mb-1">Name</label>
@@ -106,7 +106,7 @@ export default async function ProjectDetailPage({ params }: Props) {
           </div>
           <div className="flex items-center gap-2 shrink-0">
             <span className="rounded-full bg-muted px-3 py-1 text-sm">{project.status}</span>
-            <form action={(archiveProject as unknown) as (formData: FormData) => Promise<void>} method="post">
+            <form action={archiveProject} method="post">
               <input type="hidden" name="projectId" value={projectId} />
               <button type="submit" className="rounded-lg border border-destructive/30 px-3 py-1.5 text-sm font-medium text-destructive hover:bg-destructive/5 transition-colors">Archive</button>
             </form>

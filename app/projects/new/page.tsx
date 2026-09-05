@@ -10,7 +10,7 @@ export default function CreateProjectPage() {
         </Link>
       </div>
       <h1 className="text-3xl font-extrabold tracking-tight mb-6">New Project</h1>
-      <form action={(createProject as unknown) as (formData: FormData) => Promise<void>} className="space-y-4">
+      <form action={createProject} className="space-y-4">
         <div>
           <label htmlFor="name" className="block text-sm font-medium mb-1">Project name</label>
           <input
