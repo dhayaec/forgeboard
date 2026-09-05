@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Suspense } from 'react';
 import { db } from '@/lib/db';
+import { createTask } from '@/app/actions/tasks';
 
 interface Props {
   searchParams: Promise<{ q?: string; status?: string; page?: string }>;
